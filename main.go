@@ -54,6 +54,13 @@ func main() {
 	rows, err = db.Query("SELECT 1 FROM pg_roles WHERE rolname='" + dbOwner +"';")
 	handleErr(err)
 
+	notSuperUser := os.Getenv("NOTSUPERUSER")
+	if len(notSuperUser) != 0 {
+		log.Println("Granting role " + dbOwner + " to " + notSuperUser + ".")
+		_, err = db.Query("GRANT "+ dbOwner + " TO " + notSuperUser + ";")
+		handleErr(err)
+	}
+
 	//If there is a row returned then the user exists
 	if rows.Next() {
 		log.Println("User " + dbOwner +" exists, setting password and ownership")
